@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 import pickle
 import spacy
 import subprocess
@@ -13,6 +14,20 @@ FACT_CHECK_API_KEY = st.secrets["api"]["FACT_CHECK_API_KEY"]
 MODEL_FILE = "fake_news_model.pkl"
 VECTORIZER_FILE = "tfidf_vectorizer.pkl"
 
+
+
+def ensure_spacy_model():
+    """Ensure the spaCy model is available, or download it."""
+    model_name = "en_core_web_sm"
+    try:
+        spacy.load(model_name)
+    except OSError:
+        print(f"Downloading missing spaCy model: {model_name}...")
+        subprocess.run(["python", "-m", "spacy", "download", model_name], check=True)
+        print(f"Downloaded spaCy model: {model_name}")
+
+ensure_spacy_model()
+nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
 
 
 def install_spacy_model():
