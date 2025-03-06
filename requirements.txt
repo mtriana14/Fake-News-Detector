@@ -3,4 +3,10 @@ spacy
 scikit-learn
 pandas
 requests
-pickle5
+numpy
+nltk
+tensorflow
+matplotlib
+seaborn
+beautifulsoup4
+newspaper3k
