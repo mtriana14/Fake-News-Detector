@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import spacy
+import subprocess
 import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 
