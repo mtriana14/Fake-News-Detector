@@ -13,9 +13,7 @@ FACT_CHECK_API_KEY = st.secrets["api"]["FACT_CHECK_API_KEY"]
 MODEL_FILE = "fake_news_model.pkl"
 VECTORIZER_FILE = "tfidf_vectorizer.pkl"
 
-# Load NLP model for text preprocessing
-import subprocess
-import spacy
+
 
 def install_spacy_model():
     """Ensure spaCy model is installed before using it."""
@@ -31,8 +29,21 @@ def install_spacy_model():
         except subprocess.CalledProcessError:
             print(f"Error: Could not install {model_name}. Please install it manually.")
 
-install_spacy_model()
-nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+
+
+def load_spacy_model():
+    """Ensure spaCy model is available before loading"""
+    try:
+        return spacy.load("en_core_web_sm", disable=["parser", "ner"])
+    except OSError:
+        print("Error: spaCy model 'en_core_web_sm' is missing.")
+        print("Please install it manually using: python -m spacy download en_core_web_sm")
+        return None  # Prevent crashing
+
+nlp = load_spacy_model()
+if nlp is None:
+    raise SystemExit("Critical Error: Failed to load 'en_core_web_sm'. Ensure it is installed.")
+
 
 # Load the trained model and vectorizer
 with open(MODEL_FILE, "rb") as model_file:
