@@ -1,4 +1,6 @@
 import streamlit as st
+import os
+import subprocess
 import pickle
 import spacy
 import requests
@@ -22,8 +24,16 @@ st.success(" AI Model Loaded Successfully!")
 
 #  Lazy Load NLP Model (Caching)
 @st.cache_resource
+
 def load_nlp():
-    return spacy.load("en_core_web_sm", disable=["parser", "ner"])
+    """Ensure spaCy model is available before loading"""
+    model_name = "en_core_web_sm"
+    try:
+        return spacy.load(model_name, disable=["parser", "ner"])
+    except OSError:  # Model not found, install it
+        subprocess.run(["python", "-m", "spacy", "download", model_name])
+        return spacy.load(model_name, disable=["parser", "ner"])
+
 
 nlp = load_nlp()
 
