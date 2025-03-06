@@ -14,11 +14,22 @@ MODEL_FILE = "fake_news_model.pkl"
 VECTORIZER_FILE = "tfidf_vectorizer.pkl"
 
 # Load NLP model for text preprocessing
+import subprocess
+import spacy
+
 def install_spacy_model():
-    """Ensure the spaCy model is installed"""
+    """Ensure spaCy model is installed before using it."""
     model_name = "en_core_web_sm"
-    if not spacy.util.is_package(model_name):
-        subprocess.run(["python", "-m", "spacy", "download", model_name], check=True)
+    
+    try:
+        # Try loading the model first
+        spacy.load(model_name)
+    except OSError:
+        # If model is missing, attempt to download it
+        try:
+            subprocess.run(["python", "-m", "spacy", "download", model_name], check=True)
+        except subprocess.CalledProcessError:
+            print(f"Error: Could not install {model_name}. Please install it manually.")
 
 install_spacy_model()
 nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
