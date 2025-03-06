@@ -2,53 +2,17 @@ import streamlit as st
 import os
 import pickle
 import spacy
-import subprocess
 import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
 FACT_CHECK_API_KEY = st.secrets["api"]["FACT_CHECK_API_KEY"]
-
 
 # Load the saved model and vectorizer
 MODEL_FILE = "fake_news_model.pkl"
 VECTORIZER_FILE = "tfidf_vectorizer.pkl"
 
-
-
-
+# Load NLP model for text preprocessing
 nlp = spacy.load("en_core_web_sm", disable=["parser", "ner"])
-
-
-def install_spacy_model():
-    """Ensure spaCy model is installed before using it."""
-    model_name = "en_core_web_sm"
-    
-    try:
-        # Try loading the model first
-        spacy.load(model_name)
-    except OSError:
-        # If model is missing, attempt to download it
-        try:
-            subprocess.run(["python", "-m", "spacy", "download", model_name], check=True)
-        except subprocess.CalledProcessError:
-            print(f"Error: Could not install {model_name}. Please install it manually.")
-
-
-
-def load_spacy_model():
-    """Ensure spaCy model is available before loading"""
-    try:
-        return spacy.load("en_core_web_sm", disable=["parser", "ner"])
-    except OSError:
-        print("Error: spaCy model 'en_core_web_sm' is missing.")
-        print("Please install it manually using: python -m spacy download en_core_web_sm")
-        return None  # Prevent crashing
-
-nlp = load_spacy_model()
-if nlp is None:
-    raise SystemExit("Critical Error: Failed to load 'en_core_web_sm'. Ensure it is installed.")
-
 
 # Load the trained model and vectorizer
 with open(MODEL_FILE, "rb") as model_file:
